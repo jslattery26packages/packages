@@ -647,13 +647,7 @@ class Camera
     // Listen for picture being taken.
     pictureImageReader.setOnImageAvailableListener(this, backgroundHandler);
 
-    final AutoFocusFeature autoFocusFeature = cameraFeatures.getAutoFocus();
-    final boolean isAutoFocusSupported = autoFocusFeature.checkIsSupported();
-    if (isAutoFocusSupported && autoFocusFeature.getValue() == FocusMode.auto) {
-      runPictureAutoFocus();
-    } else {
-      runPrecaptureSequence();
-    }
+    takePictureAfterPrecapture();
   }
 
   /**
@@ -755,20 +749,9 @@ class Camera
             ? getDeviceOrientationManager().getPhotoOrientation()
             : getDeviceOrientationManager().getPhotoOrientation(lockedOrientation));
 
-    CameraCaptureSession.CaptureCallback captureCallback =
-        new CameraCaptureSession.CaptureCallback() {
-          @Override
-          public void onCaptureCompleted(
-              @NonNull CameraCaptureSession session,
-              @NonNull CaptureRequest request,
-              @NonNull TotalCaptureResult result) {
-            unlockAutoFocus();
-          }
-        };
-
     try {
       Log.i(TAG, "sending capture request");
-      captureSession.capture(stillBuilder.build(), captureCallback, backgroundHandler);
+      captureSession.capture(stillBuilder.build(), null, backgroundHandler);
     } catch (CameraAccessException e) {
       dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
     }
