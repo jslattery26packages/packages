@@ -515,6 +515,15 @@ final class DefaultCamera: NSObject, Camera {
     } else {
       capturePhotoOutput.isHighResolutionCaptureEnabled = true
     }
+    if #available(iOS 17.0, *) {
+      let output = capturePhotoOutput.avOutput
+      if output.isResponsiveCaptureSupported {
+        output.isResponsiveCaptureEnabled = true
+        if output.isFastCapturePrioritizationSupported {
+          output.isFastCapturePrioritizationEnabled = true
+        }
+      }
+    }
   }
 
   func stop() {
@@ -792,6 +801,8 @@ final class DefaultCamera: NSObject, Camera {
         settings.isHighResolutionPhotoEnabled = true
       }
     }
+
+    settings.photoQualityPrioritization = .speed
 
     if flashMode != .torch {
       settings.flashMode = getAVCaptureFlashMode(for: flashMode)
