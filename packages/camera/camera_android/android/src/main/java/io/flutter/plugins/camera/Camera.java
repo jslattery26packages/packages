@@ -737,8 +737,8 @@ class Camera
         CaptureRequest.SCALER_CROP_REGION,
         previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
 
-    // Have all features update the builder.
-    updateBuilderSettings(stillBuilder);
+    stillBuilder.set(
+        CaptureRequest.FLASH_MODE, previewRequestBuilder.get(CaptureRequest.FLASH_MODE));
 
     // Orientation.
     final PlatformChannel.DeviceOrientation lockedOrientation =
