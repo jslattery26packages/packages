@@ -40,7 +40,6 @@ import androidx.annotation.VisibleForTesting;
 import io.flutter.BuildConfig;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.EventChannel;
-import io.flutter.plugins.camera.features.CameraFeature;
 import io.flutter.plugins.camera.features.CameraFeatureFactory;
 import io.flutter.plugins.camera.features.CameraFeatures;
 import io.flutter.plugins.camera.features.Point;
@@ -258,12 +257,8 @@ class Camera
    * @param requestBuilder request builder to update.
    */
   void updateBuilderSettings(CaptureRequest.Builder requestBuilder) {
-    for (CameraFeature<?> feature : cameraFeatures.getAllFeatures()) {
-      if (BuildConfig.DEBUG) {
-        Log.d(TAG, "Updating builder with feature: " + feature.getDebugName());
-      }
-      feature.updateBuilder(requestBuilder);
-    }
+    cameraFeatures.getFlash().updateBuilder(requestBuilder);
+    cameraFeatures.getZoomLevel().updateBuilder(requestBuilder);
   }
 
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
@@ -737,8 +732,7 @@ class Camera
         CaptureRequest.SCALER_CROP_REGION,
         previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
 
-    stillBuilder.set(
-        CaptureRequest.FLASH_MODE, previewRequestBuilder.get(CaptureRequest.FLASH_MODE));
+    updateBuilderSettings(stillBuilder);
 
     // Orientation.
     final PlatformChannel.DeviceOrientation lockedOrientation =
